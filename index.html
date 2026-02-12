@@ -57,22 +57,27 @@
       position: relative;
     }
 
+    /* FULL SCREEN MODE */
     .fullScreen {
       position: fixed !important;
       top: 0;
       left: 0;
       width: 100vw !important;
       height: 100vh !important;
-      font-size: 60px !important;
       border-radius: 0 !important;
+      font-size: 60px !important;
+      display: flex !important;
+      justify-content: center;
+      align-items: center;
+      transform: none !important; /* 🔥 important fix */
     }
 
     /* Floating Hearts */
     .heart {
       position: absolute;
       color: rgba(255, 255, 255, 0.8);
-      font-size: 20px;
       animation: floatUp linear infinite;
+      pointer-events: none;
     }
 
     @keyframes floatUp {
@@ -104,50 +109,16 @@
   const noBtn = document.getElementById("noBtn");
 
   let scale = 1;
+  let locked = false; // 🔥 prevents further scaling
 
-  // Grow YES when mouse goes near NO
   document.addEventListener("mousemove", function(e) {
+    if (locked) return; // stop growing after fullscreen
+
     const noRect = noBtn.getBoundingClientRect();
 
     const distanceX = Math.abs(e.clientX - (noRect.left + noRect.width / 2));
-    const distanceY = Math.abs(e.clientY - (noRect.top + noRect.height / 2));
+    const distanceY = Math.abs(e.clientY - (noRect.top + no
 
-    const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-
-    if (distance < 150) {
-      scale += 0.05;
-      yesBtn.style.transform = `scale(${scale})`;
-    }
-
-    if (scale > 8) {
-      yesBtn.classList.add("fullScreen");
-      yesBtn.innerHTML = "YAYYY ❤️ YOU SAID YES!";
-    }
-  });
-
-  yesBtn.addEventListener("click", function() {
-    yesBtn.classList.add("fullScreen");
-    yesBtn.innerHTML = "YAYYY ❤️ YOU SAID YES!";
-  });
-
-  // Create Floating Hearts
-  function createHeart() {
-    const heart = document.createElement("div");
-    heart.classList.add("heart");
-    heart.innerHTML = "❤️";
-
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = Math.random() * 20 + 10 + "px";
-    heart.style.animationDuration = Math.random() * 3 + 3 + "s";
-
-    document.body.appendChild(heart);
-
-    setTimeout(() => {
-      heart.remove();
-    }, 6000);
-  }
-
-  setInterval(createHeart, 300);
 
 </script>
 
