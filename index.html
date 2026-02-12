@@ -57,7 +57,6 @@
       position: relative;
     }
 
-    /* FULL SCREEN MODE */
     .fullScreen {
       position: fixed !important;
       top: 0;
@@ -69,7 +68,7 @@
       display: flex !important;
       justify-content: center;
       align-items: center;
-      transform: none !important; /* 🔥 important fix */
+      transform: none !important;
     }
 
     /* Floating Hearts */
@@ -109,16 +108,70 @@
   const noBtn = document.getElementById("noBtn");
 
   let scale = 1;
-  let locked = false; // 🔥 prevents further scaling
+  let isActivated = false;
 
-  document.addEventListener("mousemove", function(e) {
-    if (locked) return; // stop growing after fullscreen
+  function growYesButton(e) {
+    if (isActivated) return; // 🔥 STOP after activation
 
     const noRect = noBtn.getBoundingClientRect();
 
     const distanceX = Math.abs(e.clientX - (noRect.left + noRect.width / 2));
-    const distanceY = Math.abs(e.clientY - (noRect.top + no
+    const distanceY = Math.abs(e.clientY - (noRect.top + noRect.height / 2));
 
+    const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+    if (distance < 150) {
+      scale += 0.05;
+      yesBtn.style.transform = `scale(${scale})`;
+    }
+
+    if (scale > 8) {
+      activateFullScreen();
+    }
+  }
+
+  document.addEventListener("mousemove", growYesButton);
+
+  yesBtn.addEventListener("click", activateFullScreen);
+
+  function activateFullScreen() {
+    if (isActivated) return;
+
+    isActivated = true;
+
+    // 🔥 Remove mouse tracking completely
+    document.removeEventListener("mousemove", growYesButton);
+
+    // Reset scaling
+    yesBtn.style.transform = "none";
+
+    // Hide other elements
+    document.querySelector("h1").style.display = "none";
+    noBtn.style.display = "none";
+
+    // Make fullscreen
+    yesBtn.classList.add("fullScreen");
+    yesBtn.innerHTML = "YAYYY ❤️ YOU SAID YES!";
+  }
+
+  // Create Floating Hearts
+  function createHeart() {
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.innerHTML = "❤️";
+
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = Math.random() * 20 + 10 + "px";
+    heart.style.animationDuration = Math.random() * 3 + 3 + "s";
+
+    document.body.appendChild(heart);
+
+    setTimeout(() => {
+      heart.remove();
+    }, 6000);
+  }
+
+  setInterval(createHeart, 300);
 
 </script>
 
