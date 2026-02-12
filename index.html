@@ -38,34 +38,30 @@
       border: none;
       border-radius: 50px;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: transform 0.2s ease;
       margin: 10px;
     }
 
     #yesBtn {
       background-color: #ff004c;
       color: white;
-      z-index: 2;
-      position: relative;
       box-shadow: 0 0 20px rgba(255, 0, 76, 0.7);
     }
 
     #noBtn {
       background-color: white;
       color: #ff004c;
-      z-index: 1;
-      position: relative;
     }
 
     .fullScreen {
-      position: fixed !important;
+      position: fixed;
       top: 0;
       left: 0;
-      width: 100vw !important;
-      height: 100vh !important;
-      border-radius: 0 !important;
-      font-size: 60px !important;
-      display: flex !important;
+      width: 100vw;
+      height: 100vh;
+      border-radius: 0;
+      font-size: 60px;
+      display: flex;
       justify-content: center;
       align-items: center;
       transform: none !important;
@@ -81,11 +77,11 @@
 
     @keyframes floatUp {
       0% {
-        transform: translateY(100vh) scale(1);
+        transform: translateY(100vh);
         opacity: 1;
       }
       100% {
-        transform: translateY(-10vh) scale(1.5);
+        transform: translateY(-10vh);
         opacity: 0;
       }
     }
@@ -95,7 +91,7 @@
 <body>
 
   <div class="container">
-    <h1>Will you be my Valentine? ❤️</h1>
+    <h1 id="question">Will you be my Valentine? ❤️</h1>
 
     <div class="buttons">
       <button id="yesBtn">YES ❤️</button>
@@ -106,69 +102,61 @@
 <script>
   const yesBtn = document.getElementById("yesBtn");
   const noBtn = document.getElementById("noBtn");
+  const question = document.getElementById("question");
 
   let scale = 1;
-  let isActivated = false;
+  let activated = false;
 
-  function growYesButton(e) {
-    if (isActivated) return; // 🔥 STOP after activation
+  function growYes(e) {
+    if (activated) return;
 
     const noRect = noBtn.getBoundingClientRect();
 
-    const distanceX = Math.abs(e.clientX - (noRect.left + noRect.width / 2));
-    const distanceY = Math.abs(e.clientY - (noRect.top + noRect.height / 2));
-
-    const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+    const dx = e.clientX - (noRect.left + noRect.width / 2);
+    const dy = e.clientY - (noRect.top + noRect.height / 2);
+    const distance = Math.sqrt(dx * dx + dy * dy);
 
     if (distance < 150) {
-      scale += 0.05;
+      scale += 0.08;
       yesBtn.style.transform = `scale(${scale})`;
     }
 
-    if (scale > 8) {
-      activateFullScreen();
+    if (scale >= 8) {
+      activate();
     }
   }
 
-  document.addEventListener("mousemove", growYesButton);
+  document.addEventListener("mousemove", growYes);
 
-  yesBtn.addEventListener("click", activateFullScreen);
+  yesBtn.addEventListener("click", activate);
 
-  function activateFullScreen() {
-    if (isActivated) return;
+  function activate() {
+    if (activated) return;
 
-    isActivated = true;
+    activated = true;
 
-    // 🔥 Remove mouse tracking completely
-    document.removeEventListener("mousemove", growYesButton);
+    document.removeEventListener("mousemove", growYes);
 
-    // Reset scaling
     yesBtn.style.transform = "none";
 
-    // Hide other elements
-    document.querySelector("h1").style.display = "none";
+    question.style.display = "none";
     noBtn.style.display = "none";
 
-    // Make fullscreen
     yesBtn.classList.add("fullScreen");
     yesBtn.innerHTML = "YAYYY ❤️ YOU SAID YES!";
   }
 
-  // Create Floating Hearts
+  // Floating Hearts
   function createHeart() {
     const heart = document.createElement("div");
-    heart.classList.add("heart");
+    heart.className = "heart";
     heart.innerHTML = "❤️";
-
     heart.style.left = Math.random() * 100 + "vw";
     heart.style.fontSize = Math.random() * 20 + 10 + "px";
     heart.style.animationDuration = Math.random() * 3 + 3 + "s";
-
     document.body.appendChild(heart);
 
-    setTimeout(() => {
-      heart.remove();
-    }, 6000);
+    setTimeout(() => heart.remove(), 6000);
   }
 
   setInterval(createHeart, 300);
